@@ -1,0 +1,67 @@
+name: Compilar plugin
+
+# Compila el .zip del plugin Consentia.
+#  - En cada push/PR: lo sube como artefacto descargable.
+#  - Al publicar un tag vX.Y.Z: además lo adjunta a la Release de GitHub.
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PLUGIN_SLUG: consentia
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP (para validar sintaxis)
+        run: sudo apt-get update && sudo apt-get install -y php-cli rsync zip
+
+      - name: Validar sintaxis PHP
+        run: |
+          set -e
+          find . -name '*.php' -not -path './build/*' -not -path './dist/*' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+      - name: Compilar .zip del plugin
+        run: |
+          set -e
+          rm -rf build dist && mkdir -p "build/$PLUGIN_SLUG" dist
+          rsync -a \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'build' \
+            --exclude 'dist' \
+            --exclude '*.zip' \
+            --exclude '.gitignore' \
+            --exclude '.gitattributes' \
+            --exclude 'build.ps1' \
+            ./ "build/$PLUGIN_SLUG/"
+          ( cd build && zip -rq "../dist/$PLUGIN_SLUG.zip" "$PLUGIN_SLUG" )
+          echo "Contenido:" && unzip -l "dist/$PLUGIN_SLUG.zip"
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PLUGIN_SLUG }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+      - name: Adjuntar a la Release (solo en tags vX.Y.Z)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

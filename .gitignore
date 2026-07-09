@@ -1,0 +1,9 @@
+# Artefactos de compilación
+/build/
+/dist/
+*.zip
+
+# Sistema
+.DS_Store
+Thumbs.db
+node_modules/

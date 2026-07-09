@@ -1,0 +1,8 @@
+# Normaliza finales de línea a LF (evita problemas CRLF en CI Linux).
+* text=auto eol=lf
+
+# Binarios: sin conversión.
+*.png binary
+*.jpg binary
+*.gif binary
+*.zip binary

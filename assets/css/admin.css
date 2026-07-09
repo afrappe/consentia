@@ -1,0 +1,17 @@
+/**
+ * Consentia — estilos del panel de administración.
+ */
+.consentia-settings h2.title {
+	margin-top: 30px;
+	padding-top: 14px;
+	border-top: 1px solid #dcdcde;
+}
+.consentia-status {
+	background: #fff;
+	border-left: 4px solid #002c57;
+	padding: 10px 16px;
+	margin: 12px 0 8px;
+	max-width: 780px;
+}
+.consentia-ok { color: #1a7a3c; font-weight: 600; }
+.consentia-warn { color: #ba1a1a; font-weight: 600; }

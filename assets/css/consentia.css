@@ -1,0 +1,164 @@
+/**
+ * Consentia — estilos del banner y modal de preferencias.
+ */
+.consentia {
+	--consentia-primary: #002c57;
+	--consentia-bg: #ffffff;
+	--consentia-text: #181c1e;
+	--consentia-radius: 8px;
+	position: fixed;
+	z-index: 999999;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+	color: var(--consentia-text);
+}
+.consentia[hidden] { display: none; }
+.consentia *, .consentia *::before, .consentia *::after { box-sizing: border-box; }
+
+/* Posiciones del banner */
+.consentia--bottom { left: 0; right: 0; bottom: 0; }
+.consentia--bottom .consentia__banner {
+	max-width: 1180px;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	flex-wrap: wrap;
+}
+.consentia--box-left { left: 20px; bottom: 20px; max-width: 420px; }
+.consentia--box-right { right: 20px; bottom: 20px; max-width: 420px; }
+.consentia--box-left .consentia__banner,
+.consentia--box-right .consentia__banner { display: block; }
+
+.consentia__banner {
+	background: var(--consentia-bg);
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: var(--consentia-radius);
+	box-shadow: 0 8px 40px rgba(0, 20, 40, 0.18);
+	padding: 20px 24px;
+	margin: 16px;
+	animation: consentia-in 0.3s ease;
+}
+@keyframes consentia-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+.consentia__title { font-size: 17px; font-weight: 700; margin: 0 0 6px; color: var(--consentia-text); }
+.consentia__text { margin: 0; opacity: 0.9; }
+.consentia__link { color: var(--consentia-primary); text-decoration: underline; }
+.consentia__banner-body { flex: 1 1 340px; }
+
+.consentia__banner-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.consentia--box-left .consentia__banner-actions,
+.consentia--box-right .consentia__banner-actions { margin-top: 16px; }
+
+/* Botones */
+.consentia__btn {
+	appearance: none;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	border-radius: 6px;
+	padding: 10px 18px;
+	border: 1.5px solid transparent;
+	transition: filter 0.15s ease, background 0.15s ease;
+	white-space: nowrap;
+}
+.consentia__btn--primary { background: var(--consentia-primary); color: #fff; }
+.consentia__btn--primary:hover { filter: brightness(1.1); }
+.consentia__btn--ghost {
+	background: transparent;
+	color: var(--consentia-text);
+	border-color: rgba(0, 0, 0, 0.25);
+}
+.consentia__btn--ghost:hover { background: rgba(0, 0, 0, 0.05); }
+
+/* Modal */
+.consentia__modal { position: fixed; inset: 0; z-index: 1000000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.consentia__modal[hidden] { display: none; }
+.consentia__modal-backdrop { position: absolute; inset: 0; background: rgba(0, 20, 40, 0.55); }
+.consentia__modal-dialog {
+	position: relative;
+	background: var(--consentia-bg);
+	border-radius: var(--consentia-radius);
+	max-width: 560px;
+	width: 100%;
+	max-height: 88vh;
+	overflow: auto;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+	animation: consentia-in 0.25s ease;
+}
+.consentia__modal-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 24px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.consentia__close { background: none; border: none; font-size: 28px; line-height: 1; cursor: pointer; color: var(--consentia-text); }
+.consentia__modal-body { padding: 8px 24px; }
+.consentia__modal-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	padding: 16px 24px;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	position: sticky;
+	bottom: 0;
+	background: var(--consentia-bg);
+}
+
+/* Categorías */
+.consentia__cat { padding: 16px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+.consentia__cat:last-child { border-bottom: none; }
+.consentia__cat-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+.consentia__cat-title { font-weight: 700; }
+.consentia__cat-desc { margin: 6px 0 0; opacity: 0.8; font-size: 14px; }
+.consentia__badge { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--consentia-primary); opacity: 0.8; margin-left: auto; }
+
+/* Interruptor */
+.consentia__switch { position: relative; display: inline-block; width: 44px; height: 24px; flex: 0 0 auto; }
+.consentia__switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.consentia__slider {
+	position: absolute; inset: 0; background: #c3c6d0; border-radius: 999px; transition: background 0.2s ease;
+}
+.consentia__slider::before {
+	content: ""; position: absolute; height: 18px; width: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s ease;
+}
+.consentia__switch input:checked + .consentia__slider { background: var(--consentia-primary); }
+.consentia__switch input:checked + .consentia__slider::before { transform: translateX(20px); }
+
+/* Botón flotante para reabrir */
+.consentia__reopen {
+	position: fixed;
+	left: 18px;
+	bottom: 18px;
+	z-index: 999998;
+	width: 44px;
+	height: 44px;
+	border-radius: 999px;
+	border: none;
+	background: var(--consentia-primary, #002c57);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgba(0, 20, 40, 0.3);
+	opacity: 0.85;
+}
+.consentia__reopen[hidden] { display: none; }
+.consentia__reopen:hover { opacity: 1; }
+
+body.consentia-modal-open { overflow: hidden; }
+
+@media (max-width: 640px) {
+	.consentia--bottom .consentia__banner { flex-direction: column; align-items: stretch; }
+	.consentia__banner-actions { justify-content: stretch; }
+	.consentia__banner-actions .consentia__btn { flex: 1; text-align: center; }
+}
