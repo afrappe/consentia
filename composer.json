@@ -1,0 +1,9 @@
+{
+    "name": "afrappe/consentia",
+    "description": "Consentia WP Plugin",
+    "type": "wordpress-plugin",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "brain/monkey": "^2.6"
+    }
+}
