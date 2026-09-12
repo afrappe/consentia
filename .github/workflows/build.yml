@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Instalar PHP (para validar sintaxis)
         run: sudo apt-get update && sudo apt-get install -y php-cli rsync zip
@@ -53,7 +53,7 @@ jobs:
           echo "Contenido:" && unzip -l "dist/$PLUGIN_SLUG.zip"
 
       - name: Subir artefacto
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.PLUGIN_SLUG }}
           path: dist/*.zip
@@ -61,7 +61,7 @@ jobs:
 
       - name: Adjuntar a la Release (solo en tags vX.Y.Z)
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*.zip
           generate_release_notes: true
