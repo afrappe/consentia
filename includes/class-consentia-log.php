@@ -301,7 +301,14 @@ class Consentia_Log {
 		fputcsv( $out, array( 'id', 'created_at_utc', 'consent', 'consent_version', 'ip_hash', 'user_agent' ) );
 		if ( $rows ) {
 			foreach ( $rows as $r ) {
-				fputcsv( $out, array( $r['id'], $r['created_at'], $r['consent'], $r['consent_version'], $r['ip_hash'], $r['user_agent'] ) );
+				$row_data = array( $r['id'], $r['created_at'], $r['consent'], $r['consent_version'], $r['ip_hash'], $r['user_agent'] );
+				foreach ( $row_data as $k => $v ) {
+					$v = (string) $v;
+					if ( isset( $v[0] ) && in_array( $v[0], array( '=', '+', '-', '@' ), true ) ) {
+						$row_data[ $k ] = "'" . $v;
+					}
+				}
+				fputcsv( $out, $row_data );
 			}
 		}
 		fclose( $out ); // phpcs:ignore
