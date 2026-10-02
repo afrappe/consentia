@@ -69,11 +69,22 @@ class Consentia_Log {
 			consent_version SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 			user_agent VARCHAR(255) NOT NULL DEFAULT '',
 			PRIMARY KEY  (id),
-			KEY created_at (created_at)
+			KEY created_at (created_at),
+			KEY ip_hash_created_at (ip_hash, created_at)
 		) $charset;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
+	}
+
+	/**
+	 * Aplica las actualizaciones de la base de datos.
+	 */
+	public static function maybe_upgrade() {
+		if ( 1 !== (int) get_option( 'consentia_db_version', 0 ) ) {
+			self::create_table();
+			update_option( 'consentia_db_version', 1 );
+		}
 	}
 
 	/**
@@ -100,19 +111,49 @@ class Consentia_Log {
 		}
 
 		$version = isset( $_POST['version'] ) ? absint( $_POST['version'] ) : 0;
+		$ip_hash = $this->ip_hash();
+		if ( empty( $ip_hash ) ) {
+			wp_send_json_error( array( 'message' => 'Unable to determine request source' ), 400 );
+		}
 
 		global $wpdb;
+		$table = self::table();
+
+		// Serialize each IP's count-and-insert section to enforce the limit.
+		$lock_name = 'consentia_' . substr( $ip_hash, 0, 54 );
+		$lock      = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', $lock_name )
+		);
+		if ( '1' !== (string) $lock ) {
+			wp_send_json_error( array( 'message' => 'Too many requests' ), 429 );
+		}
+
+		$time_ago     = gmdate( 'Y-m-d H:i:s', time() - 60 );
+		$recent_count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table} WHERE ip_hash = %s AND created_at >= %s",
+				$ip_hash,
+				$time_ago
+			)
+		);
+
+		if ( $recent_count >= 25 ) {
+			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			wp_send_json_error( array( 'message' => 'Too many requests' ), 429 );
+		}
+
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			self::table(),
+			$table,
 			array(
 				'created_at'      => current_time( 'mysql', true ),
-				'ip_hash'         => $this->ip_hash(),
+				'ip_hash'         => $ip_hash,
 				'consent'         => wp_json_encode( $clean ),
 				'consent_version' => $version,
 				'user_agent'      => substr( sanitize_text_field( isset( $_SERVER['HTTP_USER_AGENT'] ) ? wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : '' ), 0, 255 ),
 			),
 			array( '%s', '%s', '%s', '%d', '%s' )
 		);
+		$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		wp_send_json_success( array( 'logged' => true ) );
 	}
