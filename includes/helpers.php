@@ -31,7 +31,10 @@ const CONSENTIA_CONSENT_VERSION = 1;
  */
 function consentia_categories() {
 	static $categories = null;
-	if ( null === $categories ) {
+	static $categories_locale = null;
+	$current_locale = get_locale();
+	if ( null === $categories || $categories_locale !== $current_locale ) {
+		$categories_locale = $current_locale;
 		$categories = array(
 			'functional'           => array(
 				'label'    => __( 'Necesarias', 'consentia' ),
