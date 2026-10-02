@@ -100,13 +100,33 @@ class Consentia_Log {
 		}
 
 		$version = isset( $_POST['version'] ) ? absint( $_POST['version'] ) : 0;
+		$ip_hash = $this->ip_hash();
 
 		global $wpdb;
+		$table = self::table();
+
+		// Rate limiting: max 25 requests per IP hash per minute.
+		if ( ! empty( $ip_hash ) ) {
+			$time_ago = gmdate( 'Y-m-d H:i:s', time() - 60 );
+
+			$recent_count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM {$table} WHERE ip_hash = %s AND created_at >= %s",
+					$ip_hash,
+					$time_ago
+				)
+			);
+
+			if ( $recent_count >= 25 ) {
+				wp_send_json_error( array( 'message' => 'Too many requests' ), 429 );
+			}
+		}
+
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			self::table(),
+			$table,
 			array(
 				'created_at'      => current_time( 'mysql', true ),
-				'ip_hash'         => $this->ip_hash(),
+				'ip_hash'         => $ip_hash,
 				'consent'         => wp_json_encode( $clean ),
 				'consent_version' => $version,
 				'user_agent'      => substr( sanitize_text_field( isset( $_SERVER['HTTP_USER_AGENT'] ) ? wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : '' ), 0, 255 ),
