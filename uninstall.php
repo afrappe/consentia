@@ -11,6 +11,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 delete_option( 'consentia_settings' );
 delete_option( 'consentia_version' );
+delete_option( 'consentia_db_version' );
 
 global $wpdb;
 $table = $wpdb->prefix . 'consentia_log';

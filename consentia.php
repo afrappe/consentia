@@ -41,6 +41,7 @@ function consentia_boot() {
 	Consentia_Frontend::instance();
 	Consentia_Settings::instance();
 	Consentia_Log::instance();
+	Consentia_Log::maybe_upgrade();
 
 	load_plugin_textdomain( 'consentia', false, dirname( CONSENTIA_BASENAME ) . '/languages' );
 }
@@ -55,6 +56,7 @@ function consentia_activate() {
 	require_once CONSENTIA_DIR . 'includes/class-consentia-log.php';
 
 	Consentia_Log::create_table();
+	update_option( 'consentia_db_version', 1 );
 
 	if ( false === get_option( CONSENTIA_OPTION ) ) {
 		add_option( CONSENTIA_OPTION, consentia_default_settings() );
