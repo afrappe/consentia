@@ -30,38 +30,42 @@ const CONSENTIA_CONSENT_VERSION = 1;
  * @return array
  */
 function consentia_categories() {
-	return array(
-		'functional'           => array(
-			'label'    => __( 'Necesarias', 'consentia' ),
-			'desc'     => __( 'Imprescindibles para el funcionamiento del sitio. Siempre activas.', 'consentia' ),
-			'required' => true,
-			'gcm'      => array( 'functionality_storage', 'security_storage' ),
-		),
-		'preferences'          => array(
-			'label'    => __( 'Preferencias', 'consentia' ),
-			'desc'     => __( 'Recuerdan tus preferencias (idioma, región, personalización).', 'consentia' ),
-			'required' => false,
-			'gcm'      => array( 'personalization_storage' ),
-		),
-		'statistics'           => array(
-			'label'    => __( 'Estadísticas', 'consentia' ),
-			'desc'     => __( 'Analítica que nos ayuda a entender cómo se usa el sitio.', 'consentia' ),
-			'required' => false,
-			'gcm'      => array( 'analytics_storage' ),
-		),
-		'statistics-anonymous' => array(
-			'label'    => __( 'Estadísticas anónimas', 'consentia' ),
-			'desc'     => __( 'Analítica sin datos que te identifiquen.', 'consentia' ),
-			'required' => false,
-			'gcm'      => array(),
-		),
-		'marketing'            => array(
-			'label'    => __( 'Marketing', 'consentia' ),
-			'desc'     => __( 'Publicidad y seguimiento para medir campañas y mostrar anuncios relevantes.', 'consentia' ),
-			'required' => false,
-			'gcm'      => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
-		),
-	);
+	static $categories = null;
+	if ( null === $categories ) {
+		$categories = array(
+			'functional'           => array(
+				'label'    => __( 'Necesarias', 'consentia' ),
+				'desc'     => __( 'Imprescindibles para el funcionamiento del sitio. Siempre activas.', 'consentia' ),
+				'required' => true,
+				'gcm'      => array( 'functionality_storage', 'security_storage' ),
+			),
+			'preferences'          => array(
+				'label'    => __( 'Preferencias', 'consentia' ),
+				'desc'     => __( 'Recuerdan tus preferencias (idioma, región, personalización).', 'consentia' ),
+				'required' => false,
+				'gcm'      => array( 'personalization_storage' ),
+			),
+			'statistics'           => array(
+				'label'    => __( 'Estadísticas', 'consentia' ),
+				'desc'     => __( 'Analítica que nos ayuda a entender cómo se usa el sitio.', 'consentia' ),
+				'required' => false,
+				'gcm'      => array( 'analytics_storage' ),
+			),
+			'statistics-anonymous' => array(
+				'label'    => __( 'Estadísticas anónimas', 'consentia' ),
+				'desc'     => __( 'Analítica sin datos que te identifiquen.', 'consentia' ),
+				'required' => false,
+				'gcm'      => array(),
+			),
+			'marketing'            => array(
+				'label'    => __( 'Marketing', 'consentia' ),
+				'desc'     => __( 'Publicidad y seguimiento para medir campañas y mostrar anuncios relevantes.', 'consentia' ),
+				'required' => false,
+				'gcm'      => array( 'ad_storage', 'ad_user_data', 'ad_personalization' ),
+			),
+		);
+	}
+	return $categories;
 }
 
 /**
@@ -70,37 +74,41 @@ function consentia_categories() {
  * @return array
  */
 function consentia_default_settings() {
-	return array(
-		// Comportamiento.
-		'consent_type'        => 'optin',   // optin (GDPR/Consent Mode) u optout.
-		'categories_enabled'  => array( 'functional', 'statistics', 'marketing' ),
-		'reconsent_version'   => CONSENTIA_CONSENT_VERSION,
+	static $settings = null;
+	if ( null === $settings ) {
+		$settings = array(
+			// Comportamiento.
+			'consent_type'        => 'optin',   // optin (GDPR/Consent Mode) u optout.
+			'categories_enabled'  => array( 'functional', 'statistics', 'marketing' ),
+			'reconsent_version'   => CONSENTIA_CONSENT_VERSION,
 
-		// Consent Mode v2 directo (déjalo OFF si usas el Consent Mode de Site Kit).
-		'emit_consent_mode'   => 0,
-		'wait_for_update'     => 500,
-		'url_passthrough'     => 1,
-		'ads_data_redaction'  => 1,
+			// Consent Mode v2 directo (déjalo OFF si usas el Consent Mode de Site Kit).
+			'emit_consent_mode'   => 0,
+			'wait_for_update'     => 500,
+			'url_passthrough'     => 1,
+			'ads_data_redaction'  => 1,
 
-		// Registro.
-		'log_enabled'         => 1,
+			// Registro.
+			'log_enabled'         => 1,
 
-		// Textos.
-		'title'               => __( 'Usamos cookies', 'consentia' ),
-		'message'             => __( 'Utilizamos cookies propias y de terceros para analítica y marketing. Puedes aceptar todas, rechazarlas o configurar tus preferencias.', 'consentia' ),
-		'btn_accept'          => __( 'Aceptar todo', 'consentia' ),
-		'btn_reject'          => __( 'Rechazar', 'consentia' ),
-		'btn_prefs'           => __( 'Preferencias', 'consentia' ),
-		'btn_save'            => __( 'Guardar preferencias', 'consentia' ),
-		'privacy_text'        => __( 'Política de privacidad', 'consentia' ),
-		'privacy_url'         => '',
+			// Textos.
+			'title'               => __( 'Usamos cookies', 'consentia' ),
+			'message'             => __( 'Utilizamos cookies propias y de terceros para analítica y marketing. Puedes aceptar todas, rechazarlas o configurar tus preferencias.', 'consentia' ),
+			'btn_accept'          => __( 'Aceptar todo', 'consentia' ),
+			'btn_reject'          => __( 'Rechazar', 'consentia' ),
+			'btn_prefs'           => __( 'Preferencias', 'consentia' ),
+			'btn_save'            => __( 'Guardar preferencias', 'consentia' ),
+			'privacy_text'        => __( 'Política de privacidad', 'consentia' ),
+			'privacy_url'         => '',
 
-		// Apariencia.
-		'position'            => 'bottom',  // bottom | box-left | box-right.
-		'color_primary'       => '#002c57',
-		'color_bg'            => '#ffffff',
-		'color_text'          => '#181c1e',
-	);
+			// Apariencia.
+			'position'            => 'bottom',  // bottom | box-left | box-right.
+			'color_primary'       => '#002c57',
+			'color_bg'            => '#ffffff',
+			'color_text'          => '#181c1e',
+		);
+	}
+	return $settings;
 }
 
 /**
