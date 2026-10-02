@@ -78,7 +78,10 @@ function consentia_categories() {
  */
 function consentia_default_settings() {
 	static $settings = null;
-	if ( null === $settings ) {
+	static $settings_locale = null;
+	$current_locale = get_locale();
+	if ( null === $settings || $settings_locale !== $current_locale ) {
+		$settings_locale = $current_locale;
 		$settings = array(
 			// Comportamiento.
 			'consent_type'        => 'optin',   // optin (GDPR/Consent Mode) u optout.
